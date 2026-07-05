@@ -59,7 +59,7 @@ def extract_faces():
             cv2.imshow("Face Detection", cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
             cv2.waitKey(20)
 
-    print("?????????????????????? Face extraction complete!")
+    print("Face extraction complete!")
     cv2.destroyAllWindows()
 
 
@@ -101,7 +101,7 @@ def train_classifier():
     with open(classifier_path, "wb") as f:
         pickle.dump((svm_classifier, normalizer), f)
 
-    print("??????????????????????Face recognition model trained and saved as 'face_classifier.pkl'.")
+    print("Face recognition model trained and saved as 'face_classifier.pkl'.")
     return svm_classifier, normalizer
 
 
@@ -109,7 +109,7 @@ def recognize_faces_in_image(image_path, svm_classifier):
     image = cv2.imread(image_path)
 
     if image is None:
-        print("?????????????????????Error: Image not found!")
+        print("Error: Image not found!")
         return
 
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -129,8 +129,6 @@ def recognize_faces_in_image(image_path, svm_classifier):
 
         person_name = svm_classifier.predict(embedding)[0]
         confidence = svm_classifier.predict_proba(embedding).max() * 100
-        # label = f"{person_name} ({confidence:.1f}%)" if confidence > confidence_threshold else "Unknown"
-        
         is_unknown = confidence <= confidence_threshold
         label = "Unknown" if is_unknown else f"{person_name} ({confidence:.1f}%)"
         color = (255, 0, 0) if is_unknown else (0, 255, 0)  
@@ -146,7 +144,7 @@ def recognize_faces_in_video(video_path, svm_classifier):
     video_capture = cv2.VideoCapture(video_path)
 
     if not video_capture.isOpened():
-        print("??????????????????????????? Error: Could not open video!")
+        print("Error: Could not open video!")
         return
 
     while True:
@@ -174,7 +172,6 @@ def recognize_faces_in_video(video_path, svm_classifier):
 
             person_name = svm_classifier.predict(embedding)[0]
             confidence = svm_classifier.predict_proba(embedding).max() * 100
-            # label = f"{person_name} ({confidence:.1f}%)" if confidence > confidence_threshold else "Unknown"
             is_unknown = confidence <= confidence_threshold
             label = "Unknown" if is_unknown else f"{person_name} ({confidence:.1f}%)"
             color = (255, 0, 0) if is_unknown else (0, 255, 0)  # Red for unknown, green for known

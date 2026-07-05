@@ -56,7 +56,7 @@ def extract_faces():
             cv2.imshow("Face Detection", cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
             cv2.waitKey(50)
 
-    print("?????????????????????? Face extraction complete!")
+    print("Face extraction complete!")
     cv2.destroyAllWindows()
 
 
@@ -96,17 +96,17 @@ def train_classifier():
     svm_classifier.fit(embeddings, labels)
 
     with open(classifier_path, "wb") as f:
-        pickle.dump(svm_classifier, f)
+        pickle.dump((svm_classifier, normalizer), f)
 
-    print("??????????????????????Face recognition model trained and saved as 'face_classifier.pkl'.")
-    return svm_classifier
+    print("Face recognition model trained and saved as 'face_classifier.pkl'.")
+    return svm_classifier, normalizer
 
 
 def recognize_faces_in_image(image_path, svm_classifier):
     image = cv2.imread(image_path)
 
     if image is None:
-        print("?????????????????????Error: Image not found!")
+        print("Error: Image not found!")
         return
 
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -122,6 +122,7 @@ def recognize_faces_in_image(image_path, svm_classifier):
 
         embedding = get_embedding(face_crop)
         embedding = np.expand_dims(embedding, axis=0)
+        embedding = normalizer.transform(embedding)
 
         person_name = svm_classifier.predict(embedding)[0]
 
@@ -137,7 +138,7 @@ def recognize_faces_in_video(video_path, svm_classifier):
     video_capture = cv2.VideoCapture(video_path)
 
     if not video_capture.isOpened():
-        print("??????????????????????????? Error: Could not open video!")
+        print("Error: Could not open video!")
         return
 
     while True:
@@ -161,6 +162,7 @@ def recognize_faces_in_video(video_path, svm_classifier):
 
             embedding = get_embedding(face_crop)
             embedding = np.expand_dims(embedding, axis=0)
+            embedding = normalizer.transform(embedding)
 
             person_name = svm_classifier.predict(embedding)[0]
             confidence = svm_classifier.predict_proba(embedding).max() * 100
@@ -176,10 +178,7 @@ def recognize_faces_in_video(video_path, svm_classifier):
     video_capture.release()
     cv2.destroyAllWindows()
 
-extract_faces()
-
-
-svm_classifier = train_classifier()
-
-# recognize_faces_in_video("Test/test.mp4", svm_classifier)
-recognize_faces_in_image("Test/test (1).jpg", svm_classifier)
+if __name__ == "__main__":
+    extract_faces()
+    svm_classifier, normalizer = train_classifier()
+    recognize_faces_in_image("Test/test (1).jpg", svm_classifier)
