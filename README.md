@@ -23,10 +23,8 @@ FaceRecog Project/
 ├── face_classifier.pkl      # Trained SVM + normalizer (generated)
 ├── facenet_keras.h5         # Pre-trained FaceNet model
 ├── Images/                  # Source images organized by person
-│   ├── Abozied/
-│   ├── Ali/
-│   ├── Atef/
-│   └── Messi/
+│   ├── Your images
+│ 
 ├── my_Faces_Dataset/        # Extracted face crops (generated)
 │   └── {person}/
 └── Test/                    # Test images / videos for inference
